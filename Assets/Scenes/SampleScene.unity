@@ -274,6 +274,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: LowPolyMan
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: e77fee19f623491439477d9005b422e6, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 17fc0a56c2a3ca543ab4e804e0ac9b23, type: 2}
+    - target: {fileID: 5866666021909216657, guid: e77fee19f623491439477d9005b422e6, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e77fee19f623491439477d9005b422e6, type: 3}
 --- !u!4 &438804381 stripped
