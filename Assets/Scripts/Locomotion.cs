@@ -15,6 +15,8 @@ namespace IH
 
         [HideInInspector]
         private Transform myTransform;
+        [HideInInspector]
+        public AnimationHandler animHandler;
 
         [SerializeField] private new Rigidbody rigidbody;
         [SerializeField] private GameObject normalCamera;
@@ -23,21 +25,24 @@ namespace IH
         [SerializeField] float movementSpeed = 5;
         [SerializeField] float rotationSpeed = 10;
 
-
-
-
+ 
         // Start is called before the first frame update
         void Start()
         {
             rigidbody = GetComponent<Rigidbody>();
             inputHandler = GetComponent<InputHandler>();
+            animHandler = GetComponentInChildren<AnimationHandler>();
             cameraObject = Camera.main.transform;
             myTransform = transform;
+            animHandler.Initialize();
 
         }
 
         public void Update()
         {
+
+            Vector3 normalVector = Vector3.up;
+
             float delta = Time.deltaTime;
 
             inputHandler.TickInput(delta);
@@ -54,6 +59,13 @@ namespace IH
             Vector3 projectVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
             rigidbody.velocity = projectVelocity;
 
+            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
+
+            if (animHandler.canRotate)
+            {
+                HandleRotation(delta);
+            }
+
         }
 
 
@@ -68,7 +80,7 @@ namespace IH
 
 
             targetDir = cameraObject.forward * inputHandler.vertical;
-            targetDir += cameraObject.forward * inputHandler.horizontal;
+            targetDir += cameraObject.right * inputHandler.horizontal;
 
 
             targetDir.Normalize();

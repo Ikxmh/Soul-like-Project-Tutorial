@@ -503,6 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 930b48d52a53bb448b7171a41c9096df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animHandler: {fileID: 0}
   rigidbody: {fileID: 0}
   normalCamera: {fileID: 0}
   movementSpeed: 5
@@ -554,3 +555,22 @@ CapsuleCollider:
   m_Height: 1.8663752
   m_Direction: 1
   m_Center: {x: 0, y: 0.8933078, z: 0}
+--- !u!1 &1835539991 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e77fee19f623491439477d9005b422e6, type: 3}
+  m_PrefabInstance: {fileID: 438804380}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1835539992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1835539991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb51b374ea01aeb4d9aed28cb06bc7b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  canRotate: 1
