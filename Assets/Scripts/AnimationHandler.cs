@@ -7,7 +7,9 @@ namespace IH
 {
     public class AnimationHandler : MonoBehaviour
     {
-        [SerializeField] private Animator anim;
+        public Animator anim;
+        public InputHandler inputHandler;
+        public Locomotion playerLocomotion;
 
         int vertical;
         int horizontal;
@@ -17,6 +19,8 @@ namespace IH
         public void Initialize()
         {
             anim = GetComponent<Animator>();
+            inputHandler = GetComponentInParent<InputHandler>();
+            playerLocomotion = GetComponentInParent<Locomotion>();
             vertical = Animator.StringToHash("Vertical");
             horizontal = Animator.StringToHash("Horizontal");
         }
@@ -78,6 +82,14 @@ namespace IH
             anim.SetFloat(horizontal, horizValue, 0.1f, Time.deltaTime);
         }
 
+
+        public void PlayTargetAnimations(string targetAnim, bool isInteracting)
+        {
+            anim.applyRootMotion = isInteracting;
+            anim.SetBool("IsInteracting", isInteracting);
+            anim.CrossFade(targetAnim, 0.2f);
+        }
+
         public void CanRotate()
         {
             canRotate = true;
@@ -86,6 +98,20 @@ namespace IH
         public void StopRotation()
         {
             canRotate = false; 
+        }
+
+        private void OnAnimatorMove()
+        {
+            if (inputHandler.isInteracting == false)
+                return;
+
+            float delta = Time.deltaTime;
+            playerLocomotion.rigidbody.drag = 0;
+            Vector3 deltaPosition = anim.deltaPosition;
+            deltaPosition.y = 0;
+            Vector3 velocity = deltaPosition / delta;
+            playerLocomotion.rigidbody.velocity = velocity; 
+
         }
 
     }

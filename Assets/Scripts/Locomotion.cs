@@ -18,7 +18,7 @@ namespace IH
         [HideInInspector]
         public AnimationHandler animHandler;
 
-        [SerializeField] private new Rigidbody rigidbody;
+        public new Rigidbody rigidbody;
         [SerializeField] private GameObject normalCamera;
 
         [Header("Stats")]
@@ -47,24 +47,8 @@ namespace IH
 
             inputHandler.TickInput(delta);
 
-            moveDirection = cameraObject.forward * inputHandler.vertical;
-            moveDirection += cameraObject.right * inputHandler.horizontal;
-
-            moveDirection.Normalize();
-
-            float speed = movementSpeed;
-            moveDirection *= speed;
-
-
-            Vector3 projectVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
-            rigidbody.velocity = projectVelocity;
-
-            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
-
-            if (animHandler.canRotate)
-            {
-                HandleRotation(delta);
-            }
+            HandleMovement(delta);
+            HandleRollingAndSprinting(delta); 
 
         }
 
@@ -73,6 +57,7 @@ namespace IH
         private Vector3 normalVector;
         private Vector3 targetPosition;
 
+        // handing the character's rotation
         private void HandleRotation(float delta)
         {
             Vector3 targetDir = Vector3.zero;
@@ -99,8 +84,59 @@ namespace IH
             myTransform.rotation = targetRotation; 
 
         }
+
+        // handling the character's movement
+
+        public void HandleMovement(float delta)
+        {
+            moveDirection = cameraObject.forward * inputHandler.vertical;
+            moveDirection += cameraObject.right * inputHandler.horizontal;
+
+            moveDirection.Normalize();
+            moveDirection.y = 0;
+
+            float speed = movementSpeed;
+            moveDirection *= speed;
+
+
+            Vector3 projectVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
+            rigidbody.velocity = projectVelocity;
+
+            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
+
+            if (animHandler.canRotate)
+            {
+                HandleRotation(delta);
+            }
+        }
+
+        // determining the animations based on the character's movement 
+        public void HandleRollingAndSprinting(float delta)
+        {
+            if (animHandler.anim.GetBool("IsInteracting"))
+                return;
+
+            if (inputHandler.rollFlag)
+            {
+                moveDirection = cameraObject.forward * inputHandler.vertical;
+                moveDirection += cameraObject.right * inputHandler.horizontal;
+
+                if (inputHandler.moveAmount > 0)
+                {
+                    animHandler.PlayTargetAnimations("Rolling", true);
+                    moveDirection.y = 0;
+                    Quaternion rollRotation = Quaternion.LookRotation(moveDirection);
+                    myTransform.rotation = rollRotation; 
+                }
+                else
+                {
+                    animHandler.PlayTargetAnimations("Backstep", true); 
+                }
+            }
+        }
+
         #endregion
 
-}
+    }
 }
 
