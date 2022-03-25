@@ -91,7 +91,6 @@ namespace IH
         {
             moveDirection = cameraObject.forward * inputHandler.vertical;
             moveDirection += cameraObject.right * inputHandler.horizontal;
-
             moveDirection.Normalize();
             moveDirection.y = 0;
 
@@ -113,6 +112,7 @@ namespace IH
         // determining the animations based on the character's movement 
         public void HandleRollingAndSprinting(float delta)
         {
+            // can't roll when interacting 
             if (animHandler.anim.GetBool("IsInteracting"))
                 return;
 
