@@ -7,6 +7,7 @@ namespace IH
 {
     public class AnimationHandler : MonoBehaviour
     {
+        // setting up the variables 
         public Animator anim;
         public InputHandler inputHandler;
         public Locomotion playerLocomotion;
@@ -15,7 +16,7 @@ namespace IH
         int horizontal;
         public bool canRotate;
 
-
+        // initializing before player starts the game. 
         public void Initialize()
         {
             anim = GetComponent<Animator>();
@@ -26,7 +27,7 @@ namespace IH
         }
 
 
-        public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement)
+        public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement, bool isSprinting)
         {
             #region Vertical
             float vertValue = 0;
@@ -74,6 +75,16 @@ namespace IH
             else
             {
                 horizValue = 0;
+            }
+
+            if (isSprinting)
+            {
+                if (inputHandler.moveAmount > 0) // check to not play animation when standing still
+                {
+                    vertValue = 2;
+                }
+                
+                horizValue = horizontalMovement; 
             }
 
             #endregion

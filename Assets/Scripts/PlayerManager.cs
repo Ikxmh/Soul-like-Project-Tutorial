@@ -23,6 +23,7 @@ namespace IH
         {
             inputHandler.isInteracting = anim.GetBool("IsInteracting");
             inputHandler.rollFlag = false;
+            inputHandler.sprintFlag = false; 
         }
     }
 

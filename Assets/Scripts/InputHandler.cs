@@ -25,6 +25,8 @@ namespace IH
         public bool b_Input;
 
         public bool rollFlag;
+        public bool sprintFlag;
+        public float RollInputTimer; 
         public bool isInteracting; 
 
 
@@ -90,9 +92,21 @@ namespace IH
             b_Input = inputActions.PlayerActions.Roll.phase == UnityEngine.InputSystem.InputActionPhase.Started; 
 
             // if inputted then roll 
+            // if hold the button long else-- player will sprint instead than rolling. 
             if(b_Input)
             {
-                rollFlag = true; 
+                RollInputTimer += delta;
+                sprintFlag = true;
+            }
+            else
+            {
+                if (RollInputTimer > 0 && RollInputTimer < 0.5f)
+                {
+                    sprintFlag = false;
+                    rollFlag = true;
+                }
+
+                RollInputTimer = 0; 
             }
         }
     }

@@ -24,6 +24,10 @@ namespace IH
         [Header("Stats")]
         [SerializeField] float movementSpeed = 5;
         [SerializeField] float rotationSpeed = 10;
+        [SerializeField] float sprintSpeed = 7;
+
+
+        public bool isSprinting; 
 
  
         // Start is called before the first frame update
@@ -45,6 +49,7 @@ namespace IH
 
             float delta = Time.deltaTime;
 
+            isSprinting = inputHandler.b_Input; 
             inputHandler.TickInput(delta);
 
             HandleMovement(delta);
@@ -89,19 +94,32 @@ namespace IH
 
         public void HandleMovement(float delta)
         {
+            if (inputHandler.rollFlag)
+                return;
+
             moveDirection = cameraObject.forward * inputHandler.vertical;
             moveDirection += cameraObject.right * inputHandler.horizontal;
             moveDirection.Normalize();
             moveDirection.y = 0;
 
             float speed = movementSpeed;
-            moveDirection *= speed;
+            if (inputHandler.sprintFlag)
+            {
+                speed = sprintSpeed;
+                isSprinting = true;
+                moveDirection *= speed;
+            }
+            else
+            {
+                moveDirection *= speed;
+            }
+  
 
 
             Vector3 projectVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
             rigidbody.velocity = projectVelocity;
 
-            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
+            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, isSprinting);
 
             if (animHandler.canRotate)
             {
