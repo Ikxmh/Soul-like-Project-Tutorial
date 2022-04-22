@@ -12,8 +12,8 @@ namespace IH
         public float horizontal;
         public float vertical;
         public float moveAmount;
-        [SerializeField] private float mouseX;
-        [SerializeField] private float mouseY;
+        public float mouseX;
+        public float mouseY;
 
         private PlayerControls inputActions;
         private CameraHandler cameraHandler;
@@ -27,25 +27,6 @@ namespace IH
         public bool rollFlag;
         public bool sprintFlag;
         public float RollInputTimer; 
-        public bool isInteracting; 
-
-
-        private void Start()
-        {
-            cameraHandler = CameraHandler.singleton; 
-        }
-
-        private void FixedUpdate()
-        {
-            float delta = Time.fixedDeltaTime; 
-
-            if (cameraHandler != null)
-            {
-                cameraHandler.FollowTarget(delta);
-                cameraHandler.HandleCameraRotation(delta, mouseX, mouseY);
-            }
-        }
-
 
 
         // if the input action == null then read the values else enable the player's input 

@@ -11,7 +11,8 @@ namespace IH
 
         Transform cameraObject;
         InputHandler inputHandler;
-        private Vector3 moveDirection;
+        PlayerManager playerManager;
+        public Vector3 moveDirection;
 
         [HideInInspector]
         private Transform myTransform;
@@ -21,18 +22,28 @@ namespace IH
         public new Rigidbody rigidbody;
         [SerializeField] private GameObject normalCamera;
 
-        [Header("Stats")]
+        // setting up variables for ground & air 
+        [Header("Ground & Air Detection Stats")]
+        [SerializeField] float groundDetectionRayStartPoint = 0.5f;
+        [SerializeField] float minimumDistanceToStartFall = 1f;
+        [SerializeField] float groundDistanceRayDistance = 0.2f;
+
+        LayerMask ignoreForGroundCheck;
+        public float inAirTimer; 
+
+
+        // movement variables 
+        [Header("Movement Stats")]
         [SerializeField] float movementSpeed = 5;
         [SerializeField] float rotationSpeed = 10;
         [SerializeField] float sprintSpeed = 7;
-
-
-        public bool isSprinting; 
+        [SerializeField] float fallingSpeed = 45; 
 
  
         // Start is called before the first frame update
         void Start()
         {
+            playerManager = GetComponent<PlayerManager>();
             rigidbody = GetComponent<Rigidbody>();
             inputHandler = GetComponent<InputHandler>();
             animHandler = GetComponentInChildren<AnimationHandler>();
@@ -40,20 +51,11 @@ namespace IH
             myTransform = transform;
             animHandler.Initialize();
 
-        }
+            // start the player as grounded 
+            playerManager.isGrounded = true;
 
-        public void Update()
-        {
-
-            Vector3 normalVector = Vector3.up;
-
-            float delta = Time.deltaTime;
-
-            isSprinting = inputHandler.b_Input; 
-            inputHandler.TickInput(delta);
-
-            HandleMovement(delta);
-            HandleRollingAndSprinting(delta); 
+            // layers to ignore 
+            ignoreForGroundCheck = ~(1 << 8 | 1 << 11); 
 
         }
 
@@ -91,11 +93,13 @@ namespace IH
         }
 
         // handling the character's movement
-
         public void HandleMovement(float delta)
         {
             if (inputHandler.rollFlag)
                 return;
+
+            if (playerManager.isInteracting)
+                return; 
 
             moveDirection = cameraObject.forward * inputHandler.vertical;
             moveDirection += cameraObject.right * inputHandler.horizontal;
@@ -106,7 +110,7 @@ namespace IH
             if (inputHandler.sprintFlag)
             {
                 speed = sprintSpeed;
-                isSprinting = true;
+                playerManager.isSprinting = true;
                 moveDirection *= speed;
             }
             else
@@ -119,7 +123,7 @@ namespace IH
             Vector3 projectVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
             rigidbody.velocity = projectVelocity;
 
-            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, isSprinting);
+            animHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, playerManager.isSprinting);
 
             if (animHandler.canRotate)
             {
@@ -151,6 +155,95 @@ namespace IH
                     animHandler.PlayTargetAnimations("Backstep", true); 
                 }
             }
+        }
+
+        // preventing movement while falling 
+        public void HandleFalling(float delta, Vector3 moveDirection)
+        {
+            playerManager.isGrounded = false;
+            RaycastHit hit;
+            Vector3 origin = myTransform.position; 
+            origin.y += groundDetectionRayStartPoint;
+
+            if (Physics.Raycast(origin, myTransform.forward, out hit, 0.4f))
+            {
+                moveDirection = Vector3.zero; 
+            }
+
+            if (playerManager.isInAir)
+            {
+                rigidbody.AddForce(-Vector3.up * fallingSpeed);
+                rigidbody.AddForce(moveDirection * fallingSpeed / 10f);
+            }
+
+            Vector3 dir  = moveDirection;
+
+            dir.Normalize();
+            origin = origin + dir * groundDistanceRayDistance;
+
+            targetPosition = myTransform.position;
+
+            Debug.DrawRay(origin, -Vector3.up * minimumDistanceToStartFall, Color.red, 0.5f, false); 
+            
+            if (Physics.Raycast(origin, -Vector3.up, out hit, minimumDistanceToStartFall, ignoreForGroundCheck))
+            {
+                normalVector = hit.normal;
+                Vector3 tp = hit.point;
+                playerManager.isGrounded = true;
+                targetPosition.y = tp.y;
+
+                if (playerManager.isInAir)
+                {
+                    if (inAirTimer > 0.5f)
+                    {
+                        Debug.Log("in air for " + inAirTimer);
+                        animHandler.PlayTargetAnimations("Land", true);
+                        inAirTimer = 0;
+                    }
+                    else
+                    {
+                        animHandler.PlayTargetAnimations("Locomotion", false); 
+                        inAirTimer = 0;
+                    }
+
+                    playerManager.isInAir = false;
+                }
+
+            }
+
+            else
+            {
+                if (playerManager.isGrounded)
+                {
+                    playerManager.isGrounded = false;
+                }
+
+                if (playerManager.isInAir == false)
+                {
+                    if(playerManager.isInteracting == false)
+                    {
+                        animHandler.PlayTargetAnimations("Falling", true); 
+                    }
+
+                    Vector3 velocity = rigidbody.velocity;
+                    rigidbody.velocity = velocity * (movementSpeed / 2); 
+                    playerManager.isInAir = true;
+                }
+            }
+
+            // 
+            if (playerManager.isGrounded)
+            {
+                if (playerManager.isInteracting || inputHandler.moveAmount > 0)
+                {
+                    myTransform.position = Vector3.Lerp(myTransform.position, targetPosition, Time.deltaTime);
+                }
+                else
+                {
+                    myTransform.position = targetPosition;
+                }
+            }
+
         }
 
         #endregion

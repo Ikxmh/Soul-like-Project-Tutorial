@@ -7,10 +7,11 @@ namespace IH
 {
     public class AnimationHandler : MonoBehaviour
     {
+        PlayerManager playerManager;
         // setting up the variables 
         public Animator anim;
-        public InputHandler inputHandler;
-        public Locomotion playerLocomotion;
+        InputHandler inputHandler;
+        Locomotion playerLocomotion;
 
         int vertical;
         int horizontal;
@@ -19,6 +20,7 @@ namespace IH
         // initializing before player starts the game. 
         public void Initialize()
         {
+            playerManager = GetComponentInParent<PlayerManager>();
             anim = GetComponent<Animator>();
             inputHandler = GetComponentInParent<InputHandler>();
             playerLocomotion = GetComponentInParent<Locomotion>();
@@ -113,7 +115,7 @@ namespace IH
 
         private void OnAnimatorMove()
         {
-            if (inputHandler.isInteracting == false)
+            if (playerManager.isInteracting == false)
                 return;
 
             float delta = Time.deltaTime;
