@@ -16,6 +16,8 @@ namespace IH
         public float mouseY;
 
         private PlayerControls inputActions;
+        private PlayerAttacker playerAttacker; 
+        PlayerInventory playerInventory;
         private CameraHandler cameraHandler;
 
         private Vector2 movementinput;
@@ -23,10 +25,19 @@ namespace IH
 
 
         public bool b_Input;
+        public bool rb_Input;
+        public bool rt_Input;
 
         public bool rollFlag;
         public bool sprintFlag;
-        public float RollInputTimer; 
+        public float RollInputTimer;
+
+
+        private void Awake()
+        {
+            playerAttacker = GetComponent<PlayerAttacker>();
+            playerInventory = GetComponent<PlayerInventory>();  
+        }
 
 
         // if the input action == null then read the values else enable the player's input 
@@ -52,6 +63,7 @@ namespace IH
         {
             MoveInput(delta);
             HandleRollInput(delta); 
+            HandleAttackInput(delta);
         }
 
 
@@ -88,6 +100,23 @@ namespace IH
                 }
 
                 RollInputTimer = 0; 
+            }
+        }
+
+
+        private void HandleAttackInput(float delta)
+        {
+            inputActions.PlayerActions.RB.performed += i => rb_Input = true; 
+            inputActions.PlayerActions.RT.performed += i => rt_Input = true; 
+
+            // RB inputs deal with right hand. 
+            if (rb_Input)
+            {
+                playerAttacker.HandleLightAttack(playerInventory.rightWeapon); 
+            }
+            if (rt_Input)
+            {
+                playerAttacker.HandleHeavyAttack(playerInventory.rightWeapon);
             }
         }
     }

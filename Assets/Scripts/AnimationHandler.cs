@@ -81,10 +81,7 @@ namespace IH
 
             if (isSprinting)
             {
-                if (inputHandler.moveAmount > 0) // check to not play animation when standing still
-                {
-                    vertValue = 2;
-                }
+                vertValue = 1; 
                 
                 horizValue = horizontalMovement; 
             }

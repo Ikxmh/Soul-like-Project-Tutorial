@@ -64,9 +64,11 @@ namespace IH
         // determining the flags.  
         private void LateUpdate()
         {
+            // register one time 
             inputHandler.rollFlag = false;
             inputHandler.sprintFlag = false;
-            isSprinting = inputHandler.b_Input;
+            inputHandler.rt_Input = false; 
+            inputHandler.rb_Input = false; 
 
 
             // if in air then start the timer
