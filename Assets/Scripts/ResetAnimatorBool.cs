@@ -17,12 +17,21 @@ public class ResetAnimatorBool : StateMachineBehaviour
     //    
     //}
 
-    public string targetBool;
-    public bool status;
+    [System.Serializable]
+    public struct BoolStatus
+    {
+        public string targetBool;
+        public bool status;
+    }
+
+    public BoolStatus[] boolStatuses;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.SetBool(targetBool, status);
+        foreach (BoolStatus boolStatus in boolStatuses)
+        {
+            animator.SetBool(boolStatus.targetBool, boolStatus.status);
+        }
     }
 
 

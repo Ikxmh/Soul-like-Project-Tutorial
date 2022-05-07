@@ -110,6 +110,16 @@ namespace IH
             canRotate = false; 
         }
 
+        public void EnableCombo()
+        {
+            anim.SetBool("CanDoCombo", true); 
+        }
+
+        public void DisableCombo()
+        {
+            anim.SetBool("CanDoCombo", false); 
+        }
+
         private void OnAnimatorMove()
         {
             if (playerManager.isInteracting == false)

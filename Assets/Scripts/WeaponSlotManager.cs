@@ -10,6 +10,9 @@ namespace IH
         WeaponHolderSlot leftHandSlot;
         WeaponHolderSlot rightHandSlot;
 
+        DamageCollider leftHandDamageCollider; 
+        DamageCollider rightHandDamageCollider; 
+
         private void Awake()
         {
             // get the array of the weapons slot. 
@@ -36,12 +39,53 @@ namespace IH
             if(isLeft)
             {
                 leftHandSlot.LoadWeaponModel(weaponItem);
+                LoadLeftHandWeaponDamageCollider();
             }
             else
             {
                 rightHandSlot.LoadWeaponModel(weaponItem);
+                LoadRightHandWeaponDamageCollider();
             }
         }
+
+        // activating the collider on each hand weapon
+        public void LoadLeftHandWeaponDamageCollider()
+        {
+            leftHandDamageCollider = leftHandSlot.currentWeaponModel.GetComponentInChildren<DamageCollider>();
+        }
+
+
+        public void LoadRightHandWeaponDamageCollider()
+        {
+            rightHandDamageCollider = rightHandSlot.currentWeaponModel.GetComponentInChildren<DamageCollider>();
+        }
+
+        #region Handling weapon damage colliders 
+        
+       
+
+        public void OpenLeftHandDamageCollider()
+        {
+            leftHandDamageCollider.EnableDamageCollider();
+        }
+
+        public void OpenRightHandDamageCollider()
+        {
+            rightHandDamageCollider.EnableDamageCollider();
+        }
+
+        public void CloseLeftHandDamageCollider()
+        {
+            leftHandDamageCollider?.DisableDamageCollider();
+        }
+
+        public void CloseRightHandDamageCollider()
+        {
+            rightHandDamageCollider.DisableDamageCollider();
+        }
+
+        #endregion
+
     }
 }
 

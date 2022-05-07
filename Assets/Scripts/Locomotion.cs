@@ -212,7 +212,7 @@ namespace IH
                     }
                     else
                     {
-                        animHandler.PlayTargetAnimations("Locomotion", false); 
+                        animHandler.PlayTargetAnimations("Empty", false); 
                         inAirTimer = 0;
                     }
 
@@ -241,18 +241,18 @@ namespace IH
                 }
             }
 
-            // 
-            if (playerManager.isGrounded)
-            {
+           
                 if (playerManager.isInteracting || inputHandler.moveAmount > 0)
                 {
-                    myTransform.position = Vector3.Lerp(myTransform.position, targetPosition, Time.deltaTime);
+                    myTransform.position = Vector3.Lerp(myTransform.position, targetPosition, Time.deltaTime / 0.1f);
                 }
                 else
                 {
                     myTransform.position = targetPosition;
                 }
-            }
+            
+
+           
 
         }
 

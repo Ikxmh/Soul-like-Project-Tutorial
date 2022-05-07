@@ -17,8 +17,10 @@ namespace IH
 
         private PlayerControls inputActions;
         private PlayerAttacker playerAttacker; 
+        private PlayerManager playerManager;
         PlayerInventory playerInventory;
         private CameraHandler cameraHandler;
+
 
         private Vector2 movementinput;
         private Vector2 cameraInput;
@@ -30,6 +32,7 @@ namespace IH
 
         public bool rollFlag;
         public bool sprintFlag;
+        public bool comboFlag;
         public float RollInputTimer;
 
 
@@ -37,6 +40,7 @@ namespace IH
         {
             playerAttacker = GetComponent<PlayerAttacker>();
             playerInventory = GetComponent<PlayerInventory>();  
+            playerManager = GetComponent<PlayerManager>();
         }
 
 
@@ -112,11 +116,40 @@ namespace IH
             // RB inputs deal with right hand. 
             if (rb_Input)
             {
-                playerAttacker.HandleLightAttack(playerInventory.rightWeapon); 
+                if (playerManager.canDoCombo)
+                {
+                    comboFlag = true;
+                    playerAttacker.HandleWeaponCombo(playerInventory.rightWeapon);
+                    comboFlag = false; 
+                }
+                else
+                {
+                    if (playerManager.isInteracting)
+                        return;
+                    if (playerManager.canDoCombo)
+                        return;
+                    playerAttacker.HandleLightAttack(playerInventory.rightWeapon);
+                }
+                
             }
             if (rt_Input)
             {
-                playerAttacker.HandleHeavyAttack(playerInventory.rightWeapon);
+                if (playerManager.canDoCombo)
+                {
+                    comboFlag = true;
+                    playerAttacker.HandleWeaponCombo(playerInventory.rightWeapon);
+                    comboFlag = false;
+                }
+                else
+                {
+                    if (playerManager.isInteracting)
+                        return;
+                    if (playerManager.canDoCombo)
+                        return;
+                    playerAttacker.HandleHeavyAttack(playerInventory.rightWeapon);
+
+                }
+                
             }
         }
     }
